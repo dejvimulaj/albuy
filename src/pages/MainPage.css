@@ -1,0 +1,25 @@
+.neon{
+    color: #ffffff;
+    text-shadow:
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px hsl(0, 0%, 100%),
+        0 0 42px rgba(0, 255, 238, 0.601),
+        0 0 82px rgb(0, 255, 213),
+        0 0 92px #0fa,
+        0 0 102px #0fa,
+        0 0 151px #0fa;
+}
+
+.neonblack{
+    color: #302f2f;
+    text-shadow:
+        0 0 7px #2c2b2b,
+        0 0 10px #fff,
+        0 0 21px hsl(0, 31%, 95%),
+        0 0 42px rgba(0, 255, 238, 0.601),
+        0 0 82px rgb(0, 255, 213),
+        0 0 92px #0fa,
+        0 0 102px rgb(0, 255, 170),
+        0 0 151px #0fa;
+}

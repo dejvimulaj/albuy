@@ -9,8 +9,10 @@ import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/AdminDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerProfile from "./pages/SellerProfile";
+import Products from "./pages/Products";
 
 function App() {
+ 
   return (
     <Router>
       <Routes>
@@ -18,14 +20,15 @@ function App() {
           <Route element={<ProductPage />} path="/product/:productId" />
           <Route element={<Cart />} path="/cart" />
           <Route element={<Checkout />} path="/checkout" />
+          <Route element={<Products />} path="/products" />
           <Route element={<AdminDashboard />} path="/admindashboard" />
           <Route element={<SellerDashboard />} path="/sellerdashboard" />
-          <Route element={<SellerProfile />} path="/sellerprofile" />
           <Route element={<MainPage />} path="/" exact />
         </Route>
         <Route element={<Login />} path="/login" />
       </Routes>
     </Router>
+
   );
 }
 
