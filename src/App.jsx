@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerProfile from "./pages/SellerProfile";
 import Products from "./pages/Products";
+import Signup from "./pages/Signup";
 
 function App() {
  
@@ -26,6 +27,7 @@ function App() {
           <Route element={<MainPage />} path="/" exact />
         </Route>
         <Route element={<Login />} path="/login" />
+        <Route element={<Signup />} path="/signup" />
       </Routes>
     </Router>
 

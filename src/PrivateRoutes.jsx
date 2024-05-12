@@ -13,7 +13,7 @@ const PrivateRoutes = () => {
       <footer className=" rounded-lg shadow m-4 bg-gray-800">
   <div className="w-full mx-auto max-w-screen-xl  p-4 md:flex md:items-center md:justify-between">
     <span className="text-md text-white font-extrabold sm:text-center ">
-      © 2023{" "}
+      © 2024{" "}
       <a href="https://flowbite.com/" className="hover:underline">
         ALBuy™
       </a>
