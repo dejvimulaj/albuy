@@ -11,6 +11,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import SellerProfile from "./pages/SellerProfile";
 import Products from "./pages/Products";
 import Signup from "./pages/Signup";
+import Loader from "./components/Loader";
 
 function App() {
  

@@ -28,22 +28,39 @@ const [isLoading2, setIsLoading2] = useState(false);
 const [modalProduct, setModalProduct] = useState(null);
 const [open, setOpen] = useState(false);
 const handleClose = () => setOpen(false);
+const [selectedCategory, setSelectedCategory] = useState('all');
+const [categories, setCategories] = useState([]);
 
 useEffect(() => {
-  const fetchProducts = async () => {
-    setIsLoading(true)
+  const fetchCategories = async () => {
     try {
-      const response = await axios.get('https://fakestoreapi.com/products');
-      setProducts(response.data); // Update state with the fetched products
-      console.log(response.data)
+      const response = await axios.get('https://fakestoreapi.com/products/categories');
+      setCategories(response.data);
+      console.log({categories:response.data})
     } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally{
-      setIsLoading(false)
+      console.error('Error fetching categories:', error);
     }
   };
-  fetchProducts();
-}, []); 
+  fetchCategories();
+  fetchProductsByCategory('all'); // Initially fetch all products
+}, []);
+
+const fetchProductsByCategory = async (category) => {
+  setIsLoading(true);
+  setSelectedCategory(category);
+  try {
+    let url = 'https://fakestoreapi.com/products';
+    if (category !== 'all') {
+      url = `https://fakestoreapi.com/products/category/${category}`;
+    }
+    const response = await axios.get(url);
+    setProducts(response.data);
+  } catch (error) {
+    console.error(`Error fetching products for category ${category}:`, error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 const handleCardClick = async (productId) => {
   setIsLoading2(true)
@@ -64,7 +81,30 @@ const handleCardClick = async (productId) => {
   return (
   <>
   <h1 className='neon flex justify-center pt-10 text-3xl font-bold text-gray-500'>Shop for Products</h1>
-  <hr className="mt-4 mb-10 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-black to-transparent opacity-25 dark:via-neutral-400" />
+  <hr className="mt-4 mb-2 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-black to-transparent opacity-25 dark:via-neutral-400" />
+  <nav className="flex gap-3 flex-wrap justify-center text-lg">
+  <a
+  className={`text-center my-2 cursor-pointer inline-block w-40 rounded-full px-4 py-2 font-semibold duration-200 sm:w-48 ${
+    selectedCategory === 'all' ? 'bg-indigo-600 text-white' : 'bg-indigo-200 text-blue-800 hover:bg-indigo-600 hover:text-white'
+  }`}
+  onClick={() => fetchProductsByCategory('all')}
+>
+  All
+</a>
+{categories.map((category) => (
+  <a
+    key={category}
+    className={`text-center my-2 cursor-pointer inline-block w-40 rounded-full px-4 py-2 font-semibold duration-200 sm:w-48 ${
+      selectedCategory === category ? 'bg-indigo-600 text-white' : 'bg-indigo-200 text-blue-800 hover:bg-indigo-600 hover:text-white'
+    }`}
+    onClick={() => fetchProductsByCategory(category)}
+  >
+    {category.charAt(0).toUpperCase() + category.slice(1)}
+  </a>
+))}
+
+</nav>
+  
   <section id="Projects" className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
   {isLoading ? (
         <Loader/>
