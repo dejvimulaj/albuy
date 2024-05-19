@@ -5,18 +5,21 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Box } from "@mui/material";
+import useCartStore, { useCartChipStore } from "../hooks/store";
 
 const ProductPage = ({ product, handleClose }) => {
   const [selected, setSelected] = useState("");
+  const {addItemToCart} = useCartStore()
+  const incCounter = useCartChipStore((state)=> state.incCounter)
   const [reviewTab, setReviewTab] = useState(false)
   const handleChange = (event) => {
     setSelected(event.target.value);
   };
 
   const options = [
-    { key: "red", value: 1 },
-    { key: "blue", value: 2 },
-    { key: "green", value: 3 },
+    { key: "red", value: "red" },
+    { key: "blue", value: "blue"},
+    { key: "green", value: "green" },
   ];
 
   return (
@@ -86,7 +89,11 @@ const ProductPage = ({ product, handleClose }) => {
             </div>
             <div className="flex top-[80%] absolute w-1/3 -mx-2 mb-4">
               <div className="w-1/2 px-2">
-                <button className="w-full bg-indigo-700 text-white py-2 px-4 rounded-[15px] font-bold hover:bg-gray-800 dark:hover:bg-gray-700">
+                <button onClick={() =>{
+                      addItemToCart({...product, option:selected })
+                      incCounter()
+                      
+                    }} className="w-full bg-indigo-700 text-white py-2 px-4 rounded-[15px] font-bold hover:bg-gray-800 dark:hover:bg-gray-700">
                   Add to Cart
                 </button>
               </div>

@@ -10,7 +10,7 @@ const PrivateRoutes = () => {
     <>
       <NavbarSetup></NavbarSetup>
       <Outlet />
-      <button class="fixed bottom-5 right-5 p-9 bg-indigo-500 text-white rounded-full shadow hover:bg-indigo-600 hover:animate-spin focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50">
+      <button className="fixed bottom-5 right-5 p-9 bg-indigo-500 text-white rounded-full shadow hover:bg-indigo-600 hover:animate-spin focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50">
           <FaPlus size={"25px"}></FaPlus>
         </button>
   
