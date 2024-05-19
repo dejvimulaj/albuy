@@ -5,13 +5,12 @@ import Login from "./pages/Login";
 import MainPage from "./pages/MainPage";
 import ProductPage from "./pages/ProductPage";
 import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/AdminDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
-import SellerProfile from "./pages/SellerProfile";
 import Products from "./pages/Products";
 import Signup from "./pages/Signup";
 import Loader from "./components/Loader";
+import Orders from "./pages/Orders";
 
 function App() {
  
@@ -21,10 +20,10 @@ function App() {
         <Route element={<PrivateRoutes />}>
           <Route element={<ProductPage />} path="/product/:productId" />
           <Route element={<Cart />} path="/cart" />
-          <Route element={<Checkout />} path="/checkout" />
           <Route element={<Products />} path="/products" />
           <Route element={<AdminDashboard />} path="/admindashboard" />
           <Route element={<SellerDashboard />} path="/sellerdashboard" />
+          <Route element={<Orders />} path="/orders" />
           <Route element={<MainPage />} path="/" exact />
         </Route>
         <Route element={<Login />} path="/login" />
