@@ -1,18 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import NavbarSetup from "./components/NavbarSetup";
 import { FaPlus } from "react-icons/fa";
+import { Box, Modal } from "@mui/material";
+import AddProduct from "./pages/AddProduct";
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 700,
+  height:700,
+  bgcolor: '#F5F5F5',
+  borderRadius:3,
+  boxShadow: 24,
+  p: 4,
+};
 
 const PrivateRoutes = () => {
   let auth = { token: true };
+
+const [open, setOpen] = useState(false);
+const handleClose = () => setOpen(false);
+const handleOpen = () => setOpen(true);
+  
   return auth.token ? (
     <>
       <NavbarSetup></NavbarSetup>
       <Outlet />
-      <button className="fixed bottom-5 right-5 p-9 bg-indigo-500 text-white rounded-full shadow hover:bg-indigo-600 hover:animate-spin focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50">
+      <button onClick={handleOpen} className="fixed bottom-5 right-5 p-9 bg-indigo-500 text-white rounded-full shadow hover:bg-indigo-600 hover:animate-spin focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50">
           <FaPlus size={"25px"}></FaPlus>
         </button>
+        <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <AddProduct/>
+              </Box>
+            </Modal>
   
       <footer className=" rounded-lg shadow m-4 bg-gray-800">
         <div className="w-full mx-auto max-w-screen-xl  p-4 md:flex md:items-center md:justify-between">
