@@ -63,7 +63,7 @@ const Signup = () => {
     console.log("Form submitted:", { email, password,firstName, lastName, role, companyName });
 try {
 
-    const response = await axios.post("http://localhost:5173/api/auth/signup", {
+    const response = await axios.post("/api/auth/signup", {
       "firstName":firstName,
       "lastName":lastName, 
       "email":email,

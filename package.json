@@ -26,7 +26,7 @@
     "sort-by": "^1.2.0",
     "zustand": "^4.5.2"
   },
-  "proxy": "http://localhost:5173",
+  "proxy": "http://localhost:8080",
   "devDependencies": {
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
