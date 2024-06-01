@@ -1,13 +1,29 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [sellerAccount, setSellerAccount] = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
+  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  const handleFullNameChange = (event) => {
+      const fullName = event.target.value;
+      setFullName(fullName);
+      const nameParts = fullName.trim().split(' ');
+      if (nameParts.length > 1) {
+          setFirstName(nameParts[0]); // Assumes the first part is the first name
+          setLastName(nameParts[nameParts.length - 1]); // Assumes the last part is the surname
+      } else {
+          setFirstName(fullName); // Only one name part available
+          setLastName('');
+      }
+  };
 
   const validateEmail = (email) => {
     if (!email) {
@@ -27,7 +43,7 @@ const Signup = () => {
     return "";
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
@@ -37,8 +53,29 @@ const Signup = () => {
       return;
     }
 
-    console.log("Form submitted:", { email, password });
-    // Here you can integrate your authentication logic or API call
+    
+    let role = "";
+    if (sellerAccount == false) {
+      role = "BUYER";
+    } else {
+      role = "SELLER";
+    }
+    console.log("Form submitted:", { email, password,firstName, lastName, role, companyName });
+try {
+
+    const response = await axios.post("http://localhost:5173/api/auth/signup", {
+      "firstName":firstName,
+      "lastName":lastName, 
+      "email":email,
+      "password":password,
+      "role":role,
+      "companyName":companyName,
+    });
+  } catch (err) { 
+      console.log(err)
+  }
+
+    
   };
 
   const handleCheckboxChange = (event) => {
@@ -85,8 +122,8 @@ const Signup = () => {
                   type="fullName"
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={fullName} 
+                  onChange={handleFullNameChange}
                 />
               </div>
             </div>
@@ -143,9 +180,9 @@ const Signup = () => {
               >
                 Sign up as seller
               </label>
-              <label class="relative mb-5 cursor-pointer">
-                <input type="checkbox" value={sellerAccount} onChange={handleCheckboxChange} class="peer sr-only " />
-                <div class="peer  h-5 w-9 rounded-full bg-gray-400 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-700 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-200"></div>
+              <label className="relative mb-5 cursor-pointer">
+                <input type="checkbox" value={sellerAccount} onChange={handleCheckboxChange} className="peer sr-only " />
+                <div className="peer  h-5 w-9 rounded-full bg-gray-400 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-indigo-700 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-200"></div>
               </label>
             </div>
             {sellerAccount && (

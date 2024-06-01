@@ -9,7 +9,7 @@ import Cart from "../pages/Cart";
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-
+import { useLogout } from "../hooks/useLogout";
 const style = {
   position: 'absolute',
   top: '50%',
@@ -31,6 +31,10 @@ const NavbarSetup = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const {logout} = useLogout()
+  const handleLogout = () => {
+    logout()
+  }
 
   return (
     <>
@@ -196,6 +200,7 @@ const NavbarSetup = () => {
                 <a
                   href="#"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLogout}
                 >
                   Logout
                 </a>

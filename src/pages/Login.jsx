@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLogin } from '../hooks/useLogin';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ email: '', password: '' });
+  const {login,error} = useLogin()
 
   const validateEmail = (email) => {
     if (!email) {
@@ -15,27 +17,19 @@ const Login = () => {
     return '';
   };
 
-  const validatePassword = (password) => {
-    if (!password) {
-      return "Password is required.";
-    } else if (password.length < 6) {
-      return "Password must be at least 6 characters long.";
-    }
-    return '';
-  };
 
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
 
-    if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError });
+    if (emailError ) {
+      setErrors({ email: emailError  });
       return;
     }
 
     console.log('Form submitted:', { email, password });
-    // Here you can integrate your authentication logic or API call
+    await login(email,password)
   };
 
   return (
