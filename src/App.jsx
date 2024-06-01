@@ -10,7 +10,6 @@ import SellerDashboard from "./pages/SellerDashboard";
 import Products from "./pages/Products";
 import Signup from "./pages/Signup";
 import Loader from "./components/Loader";
-import Orders from "./pages/Orders";
 
 function App() {
  
@@ -23,7 +22,6 @@ function App() {
           <Route element={<Products />} path="/products" />
           <Route element={<AdminDashboard />} path="/admindashboard" />
           <Route element={<SellerDashboard />} path="/sellerdashboard" />
-          <Route element={<Orders />} path="/orders" />
           <Route element={<MainPage />} path="/" exact />
         </Route>
         <Route element={<Login />} path="/login" />
