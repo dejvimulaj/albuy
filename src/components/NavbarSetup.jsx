@@ -1,5 +1,5 @@
 import { Badge } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaShoppingBag, FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useCartChipStore } from "../hooks/store";
@@ -10,6 +10,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { useLogout } from "../hooks/useLogout";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { memo } from "react";
 const style = {
   position: 'absolute',
   top: '50%',
@@ -25,7 +27,7 @@ const style = {
 
 
 const NavbarSetup = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const cartCounter = useCartChipStore((state) => state.cartCounter);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [open, setOpen] = useState(false);
@@ -35,10 +37,17 @@ const NavbarSetup = () => {
   const handleLogout = () => {
     logout()
   }
+  const {user} = useAuthContext()
+
+  useEffect(() => {
+    setIsLoggedIn(!!user); // `!!user` will convert truthy/falsy values to true/false
+  }, [user]); // Dependency array with `user` ensures this runs only when `user` changes
+
+
 
   return (
     <>
-      {isLoggedIn ? (
+      {isLoggedIn? (
         <>
           {/** THIS IS DISPLAYED WHEN USER IS LOGGED IN */}
           <nav className="relative px-4 py-4 flex justify-between items-center bg-gray-50">
@@ -103,7 +112,7 @@ const NavbarSetup = () => {
                   Shop
                 </Link>
               </li>
-              <li className="text-gray-300">
+              {user.role=="ADMIN"?<><li className="text-gray-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -126,7 +135,9 @@ const NavbarSetup = () => {
                 >
                   Users
                 </Link>
-              </li>
+              </li></>:<></>}
+              { user.role == "SELLER" ?
+              <>
               <li className="text-gray-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +161,12 @@ const NavbarSetup = () => {
                 >
                   My Products
                 </Link>
-              </li>
+              </li> 
+              
+              </>
+              : <></>
+
+              }
             </ul>
 
             <button
@@ -188,14 +204,8 @@ const NavbarSetup = () => {
               >
                 {/* Dropdown Items */}
                 <div className="px-4 py-2 text-sm text-gray-700 font-bold">
-                  Dave Mulaj (User)
+                  {user.firstName} {user.lastName} ({user&& user.role})
                 </div>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Settings
-                </a>
                 <hr className="my-1" />
                 <a
                   href="#"
@@ -302,7 +312,7 @@ const NavbarSetup = () => {
             </nav>
           </div>
         </>
-      ) : (
+      ): (
         <>
           {/** THIS IS DISPLAYED WHEN USER IS LOGGED IN */}
           <nav className="relative px-4 py-4 flex justify-between items-center bg-gray-50">

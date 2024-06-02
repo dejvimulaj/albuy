@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import NavbarSetup from "./components/NavbarSetup";
 import { FaPlus } from "react-icons/fa";
 import { Box, Modal } from "@mui/material";
 import AddProduct from "./pages/AddProduct";
+import { useAuthContext } from "./hooks/useAuthContext";
+import { useLogin } from "./hooks/useLogin";
+import Loader from "./components/Loader";
 
 const style = {
   position: 'absolute',
@@ -19,16 +22,27 @@ const style = {
 };
 
 const PrivateRoutes = () => {
-  let auth = { token: true };
+
 
 const [open, setOpen] = useState(false);
 const handleClose = () => setOpen(false);
 const handleOpen = () => setOpen(true);
+const {isLoading} = useLogin()
+const { user } = useAuthContext();
+
+useEffect(() => {
+  // This will run when `user` changes
+  console.log('User has changed:', user);
+}, [user]);
   
-  return auth.token ? (
+  return  (
+    <>
+    {isLoading?<Loader/>
+    :
     <>
       <NavbarSetup></NavbarSetup>
       <Outlet />
+{user && user.role =="SELLER" ?<>
       <button onClick={handleOpen} className="fixed bottom-5 right-5 p-9 bg-indigo-500 text-white rounded-full shadow hover:bg-indigo-600 hover:animate-spin focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50">
           <FaPlus size={"25px"}></FaPlus>
         </button>
@@ -42,7 +56,7 @@ const handleOpen = () => setOpen(true);
                 <AddProduct/>
               </Box>
             </Modal>
-  
+      </>: <></>}
       <footer className=" rounded-lg shadow m-4 bg-gray-800">
         <div className="w-full mx-auto max-w-screen-xl  p-4 md:flex md:items-center md:justify-between">
           <span className="text-md text-white font-extrabold sm:text-center ">
@@ -76,10 +90,13 @@ const handleOpen = () => setOpen(true);
           </ul>
         </div>
       </footer>
+    
     </>
-  ) : (
-    <Navigate to="/login" />
-  );
+    
+  }
+  
+    </>
+  ) 
 };
 
 export default PrivateRoutes;

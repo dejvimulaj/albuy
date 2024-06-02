@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "../hooks/axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +24,7 @@ const Signup = () => {
           setLastName('');
       }
   };
-
+  const navigate = useNavigate();
   const validateEmail = (email) => {
     if (!email) {
       return "Email is required.";
@@ -71,6 +71,7 @@ try {
       "role":role,
       "companyName":companyName,
     });
+    navigate('/login')
   } catch (err) { 
       console.log(err)
   }

@@ -20,14 +20,14 @@ const ProductCard = ({ product, onCardClick }) => {
         />
         <div className="px-4 py-3 w-72">
           <span className="text-gray-600 mr-3 uppercase flex text-xs">
-            <p>{product.rating.rate > 0 ? product.rating.rate : "New"}</p>{" "}
+            <p>{product.rating > 0 ? product.rating : "New"}</p>{" "}
             <FaStar className="mt-[2px] ml-1" color="gold" />
           </span>
           <p className="text-lg font-bold text-black truncate block capitalize">
             {product.title}
           </p>
           <div className="flex items-center">
-            <p className="text-lg font-semibold text-black cursor-auto my-3">
+            <p className="text-lg font-bold text-[#2f862f] cursor-auto my-3">
               ${product.price}
             </p>
             <div

@@ -4,10 +4,16 @@ import { GrRadialSelected } from "react-icons/gr";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { MdShoppingCartCheckout } from "react-icons/md";
 import useCartStore, { useCartChipStore } from "../hooks/store";
+import { useAuthContext } from "../hooks/useAuthContext";
+import axios from "../hooks/axios";
 
 const Cart = ({}) => {
   const [address, setAddress] = useState("");
-  const { cartItems } = useCartStore();
+  const { user } = useAuthContext();
+  const { cartItems, resetCart } = useCartStore(state => ({
+    cartItems: state.cartItems,
+    resetCart: state.resetCart
+  }));
   var totalPrice = 0;
   var totalQuantity = 0;
   for (let i = 0; i < cartItems.length; i++) {
@@ -19,6 +25,7 @@ const Cart = ({}) => {
     useCartStore();
   const decCounter = useCartChipStore((state) => state.decCounter);
   const incCounter = useCartChipStore((state) => state.incCounter);
+  const {resetCounter} = useCartChipStore()
 
   const onIncreaseQuantity = (productId) => {
     increaseQuantity(productId);
@@ -32,7 +39,72 @@ const Cart = ({}) => {
   const onRemoveItem = (productId) => {
     removeItemFromCart(productId);
     decCounter();
+    
   };
+
+  const handlePurchase = async () => {
+    const token = localStorage.getItem('accessToken')
+    const orderItems = cartItems.map(item => ({
+      imageUrl: item.image,
+      unitPrice: item.price,
+      quantity: item.quantity,
+      productId: item.id
+    }));
+    const buyerInfo = {
+      id:user.userId,
+      username:user.username,
+      email:user.username,
+      firstName:user.firstName,
+      lastName:user.lastName
+    }
+    console.log(cartItems)
+    try {
+      const response = await axios.post(
+        '/api/checkout/purchase',
+        {
+          buyer: buyerInfo,
+          order: {
+            shippingAddress: address,
+            totalPrice,
+            status: "PROCESSING",
+            totalQuantity,
+            orderItems: orderItems
+          },
+          orderItems: orderItems
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      console.log(response);
+    } catch (err) {
+      console.log(err)
+      console.log(        {
+        buyer: buyerInfo,
+        order: {
+          shippingAddress: address,
+          totalPrice,
+          status: "PROCESSING",
+          totalQuantity,
+          orderItems: orderItems
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      } )
+    } finally {
+      resetCart()
+      resetCounter()
+      setAddress('')
+    }
+  }
+
+
   return (
     <>
       <div className="flex justify-center">
@@ -156,7 +228,7 @@ const Cart = ({}) => {
                   <p className="text-sm text-gray-700">including VAT</p>
                 </div>
               </div>
-              <button className="flex justify-center mt-6 w-full rounded-md bg-gray-300 hover:bg-gray-200 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
+              <button onClick={handlePurchase} className="flex justify-center mt-6 w-full rounded-md bg-gray-300 hover:bg-gray-200 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
                 Purchase
                 <IoBagCheckOutline className="ml-1 mt-[2px]" size={19} />
               </button>

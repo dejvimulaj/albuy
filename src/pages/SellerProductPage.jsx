@@ -4,14 +4,33 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { Box } from "@mui/material";
+import { Box, Rating } from "@mui/material";
+import axios from "../hooks/axios";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const SellerProductPage = ({ product, handleClose }) => {
   const [selected, setSelected] = useState("");
   const [reviewTab, setReviewTab] = useState(false)
+  const { user } = useAuthContext();
   const handleChange = (event) => {
     setSelected(event.target.value);
   };
+
+  const handleDelete = async (e) => {
+    e.preventDefault()
+    const token = localStorage.getItem('accessToken')
+    try {
+      const response = await axios.delete(`/api/products/delete/${product.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }}
+      );
+
+    } catch (err) { 
+        console.log(err)
+    }
+  }
 
   const options = [
     { key: "red", value: "red" },
@@ -20,7 +39,7 @@ const SellerProductPage = ({ product, handleClose }) => {
   ];
 
   return (
-    <div className="flex">
+    <div className="flex justify-between">
     <div className="bg-gray-100 dark:bg-gray-800 py-8">
       <div className="max-w-5xl mt-2 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row -mx-4">
@@ -52,7 +71,7 @@ const SellerProductPage = ({ product, handleClose }) => {
                   Rating
                 </span>
                 <span className="text-gray-600 flex text-xl dark:text-gray-300">
-                  <p>{product.rating.rate > 0 ? product.rating.rate : "New"}</p>{" "}
+                  <p>{product.rating > 0 ? product.rating : "New"}</p>{" "}
                   <FaStar className="mt-[4px] ml-1" color="gold" />
                 </span>
               </div>
@@ -86,9 +105,7 @@ const SellerProductPage = ({ product, handleClose }) => {
             </div>
             <div className="flex top-[80%] absolute w-1/3 -mx-2 mb-4">
               <div className="w-1/2 px-2">
-                <button onClick={() =>{
-                      
-                    }} className="w-full bg-red-700 text-white py-2 px-4 rounded-[15px] font-bold hover:bg-gray-800 dark:hover:bg-gray-700">
+                <button onClick={handleDelete} className="w-full bg-red-700 text-white py-2 px-4 rounded-[15px] font-bold hover:bg-gray-800 dark:hover:bg-gray-700">
                   Delete Item
                 </button>
               </div>
@@ -99,7 +116,28 @@ const SellerProductPage = ({ product, handleClose }) => {
     </div>
 { reviewTab?
     <div className="w-[440px] ml-16 flex-col justify-center align-middle bg-white shadow-md rounded-xl duration-500  hover:shadow-xl">
-
+                 <div className="w-full mt-2">
+            {product.reviews && product.reviews.length > 0 ? (
+              product.reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="bg-gray-50 p-3 rounded-lg shadow mb-2 mx-4"
+                >
+                  <p className="text-sm font-bold">{review.user}</p>
+                  <p className="text-sm">{review.description}</p>
+                  <Rating
+                    name="read-only"
+                    value={Math.round(review.rating * 2) / 2}
+                    readOnly
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-600 text-2xl text-center">
+                No Reviews Yet...
+              </p>
+            )}
+          </div>
     </div>
     :<div onClick={()=>setReviewTab(true)} className="w-[440px] ml-16 flex-col justify-center align-middle bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
     <h1 className=' flex justify-center mt-5 text-3xl font-bold text-gray-500'>Click to</h1>

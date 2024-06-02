@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import './MainPage.css'
 import ProductCard from '../components/ProductCard'
 import Loader from '../components/Loader'
-import axios from 'axios'
+import axios from '../hooks/axios'
 import Modal from '@mui/material/Modal';
 import Box from "@mui/material/Box";
 import Cart from "../pages/Cart";
 import ProductPage from './ProductPage'
+import { useAuthContext } from '../hooks/useAuthContext'
 
 const style = {
   position: 'absolute',
@@ -30,17 +31,18 @@ const [open, setOpen] = useState(false);
 const handleClose = () => setOpen(false);
 const [selectedCategory, setSelectedCategory] = useState('all');
 const [categories, setCategories] = useState([]);
+const { user } = useAuthContext();
 
 useEffect(() => {
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('https://fakestoreapi.com/products/categories');
-      setCategories(response.data);
-      console.log({categories:response.data})
+      const response = await axios.get('/api/productCategories');
+      setCategories(response?.data?._embedded.productCategories);
+      console.log({categories:response.data._embedded.productCategories})
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  };
+};
   fetchCategories();
   fetchProductsByCategory('all'); // Initially fetch all products
 }, []);
@@ -48,13 +50,15 @@ useEffect(() => {
 const fetchProductsByCategory = async (category) => {
   setIsLoading(true);
   setSelectedCategory(category);
+  console.log(category)
   try {
-    let url = 'https://fakestoreapi.com/products';
+    let url = '/api/products';
     if (category !== 'all') {
-      url = `https://fakestoreapi.com/products/category/${category}`;
+      url = `/api/products/category/${category}`;
     }
     const response = await axios.get(url);
     setProducts(response.data);
+    console.log(response.data)
   } catch (error) {
     console.error(`Error fetching products for category ${category}:`, error);
   } finally {
@@ -66,7 +70,7 @@ const handleCardClick = async (productId) => {
   setIsLoading2(true)
   setOpen(true)
   try {
-    const response = await axios.get(`https://fakestoreapi.com/products/${productId}`);
+    const response = await axios.get(`/api/product/detail/${productId}/${user.userId}`);
     setModalProduct(response.data);
     console.log(response.data)
   } catch (error) {
@@ -91,15 +95,15 @@ const handleCardClick = async (productId) => {
 >
   All
 </a>
-{categories.map((category) => (
+{categories && categories.map((category) => (
   <a
-    key={category}
+    // key={category.categoryName}
     className={`text-center my-2 cursor-pointer inline-block w-40 rounded-full px-4 py-2 font-semibold duration-200 sm:w-48 ${
-      selectedCategory === category ? 'bg-indigo-600 text-white' : 'bg-indigo-200 text-blue-800 hover:bg-indigo-600 hover:text-white'
+      selectedCategory === category.categoryName ? 'bg-indigo-600 text-white' : 'bg-indigo-200 text-blue-800 hover:bg-indigo-600 hover:text-white'
     }`}
-    onClick={() => fetchProductsByCategory(category)}
+    onClick={() => fetchProductsByCategory(category.categoryName)}
   >
-    {category.charAt(0).toUpperCase() + category.slice(1)}
+    {category.categoryName.charAt(0).toUpperCase() + category.categoryName.slice(1)}
   </a>
 ))}
 
@@ -110,7 +114,7 @@ const handleCardClick = async (productId) => {
         <Loader/>
       ) : products.length > 0 ? (
         <>
-          {products.map(product => (
+          {products && products.map(product => (
             <ProductCard key={product.id} product={product} onCardClick={handleCardClick} ></ProductCard>
           ))}
         </>

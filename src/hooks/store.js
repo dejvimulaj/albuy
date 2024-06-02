@@ -9,7 +9,7 @@ export const useCartChipStore = create((set) => ({
 
 const useCartStore = create(((set,get) => ({
     cartItems: [],
-  
+    resetCart: () => set({ cartItems: [] }),
     addItemToCart: (item) => {
       set(state => {
         const itemExists = state.cartItems.find(cartItem => cartItem.id === item.id);

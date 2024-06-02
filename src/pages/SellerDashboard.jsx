@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import './MainPage.css'
 import ProductCard from '../components/ProductCard'
 import Loader from '../components/Loader'
-import axios from 'axios'
 import Modal from '@mui/material/Modal';
 import Box from "@mui/material/Box";
 import Cart from "../pages/Cart";
 import ProductPage from './ProductPage'
 import SellerProductCard from '../components/SellerProductCard'
 import SellerProductPage from './SellerProductPage'
+import { useAuthContext } from '../hooks/useAuthContext'
+import axios from '../hooks/axios';
+import SmallLoader from '../components/SmallLoader'
 
 const style = {
   position: 'absolute',
@@ -27,38 +29,54 @@ const SellerDashboard = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
+  const [isLoading3, setIsLoading3] = useState(false);
   const [modalProduct, setModalProduct] = useState(null);
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [categories, setCategories] = useState([]);
-  
+  const { user } = useAuthContext();
+  const [stats, setStats] = useState(null);
+
+
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchStats = async () => {
+      setIsLoading3(true)
       try {
-        const response = await axios.get('https://fakestoreapi.com/products/categories');
-        setCategories(response.data);
-        console.log({categories:response.data})
+        const token = localStorage.getItem('accessToken'); 
+        const response = await axios.get(`/api/seller-stats/${user.userId}`, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }}
+        )
+        setStats(response?.data);
+        console.log({stats:response?.data})
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching stats:', error);
       }
     };
-    fetchCategories();
-    fetchProductsByCategory('all'); // Initially fetch all products
+        fetchStats()
   }, []);
   
-  const fetchProductsByCategory = async (category) => {
+  useEffect(() => {
+    fetchProductsByCategory(); // Initially fetch all products
+  }, []);
+  
+  const fetchProductsByCategory = async () => {
     setIsLoading(true);
-    setSelectedCategory(category);
     try {
-      let url = 'https://fakestoreapi.com/products';
-      if (category !== 'all') {
-        url = `https://fakestoreapi.com/products/category/${category}`;
-      }
-      const response = await axios.get(url);
+      let url = `/api/products/seller/${user.userId}`;
+
+      const response = await axios.get(url,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }}
+      );
       setProducts(response.data);
     } catch (error) {
-      console.error(`Error fetching products for category ${category}:`, error);
+      console.error(`Error fetching products`, error);
     } finally {
       setIsLoading(false);
     }
@@ -68,8 +86,8 @@ const SellerDashboard = () => {
     setIsLoading2(true)
     setOpen(true)
     try {
-      const response = await axios.get(`https://fakestoreapi.com/products/${productId}`);
-      setModalProduct(response.data);
+      const response = await axios.get(`/api/product/detail/${productId}/${user.userId}`);
+    setModalProduct(response.data);
       console.log(response.data)
     } catch (error) {
       console.error('Error fetching product details:', error);
@@ -87,18 +105,15 @@ const SellerDashboard = () => {
     
     <div className="flex flex-wrap gap-4 justify-center ">
   {/* card 1 */}
-  <div className="flex flex-col gap-2 h-36 text-white rounded-xl shadow-md p-6 max-w-[240px] bg-indigo-700 bg-opacity-50 backdrop-filter backdrop-blur-lg">
+  <div className="flex flex-col gap-2 h-36 text-white rounded-xl shadow-md p-6 max-w-[240px] bg-indigo-700 bg-opacity-40 backdrop-filter backdrop-blur-lg">
     <div className="font-semibold text-lg">Total Units Sold</div>
-    <div className="font-semibold text-5xl tracking-tight">10 Units</div>
+    {isLoading?<SmallLoader/>:<div className="font-semibold text-5xl tracking-tight">{stats?stats.totalUnitsSold : "0"} Units</div>}
   </div>
   {/* card 2 */}
-  <div className="flex flex-col gap-2 h-36 text-white rounded-xl shadow-md p-6 max-w-[240px] bg-indigo-700 bg-opacity-30 backdrop-filter backdrop-blur-lg">
-    <div className="font-semibold text-lg">Total Orders</div>
-    <div className="font-semibold text-5xl tracking-tight just">10</div>
-  </div>
-  <div className="flex flex-col gap-2 h-36 text-white rounded-xl shadow-md p-6 max-w-[240px] bg-indigo-700 bg-opacity-50 backdrop-filter backdrop-blur-lg">
+
+  <div className="flex flex-col gap-2 h-36 text-white rounded-xl shadow-md p-6 max-w-[240px] bg-indigo-700 bg-opacity-40 backdrop-filter backdrop-blur-lg">
     <div className="font-semibold text-lg">Total Revenue</div>
-    <div className="font-semibold text-5xl tracking-tight">$9.524</div>
+    {isLoading?<SmallLoader/>:<div className="font-semibold text-5xl tracking-tight">${stats? stats.totalRevenue :"0"}</div>}
   </div>
 </div>
 
@@ -108,7 +123,7 @@ const SellerDashboard = () => {
           <Loader/>
         ) : products.length > 0 ? (
           <>
-            {products.map(product => (
+            {products && products.map(product => (
               <SellerProductCard key={product.id} product={product} onCardClick={handleCardClick} ></SellerProductCard>
             ))}
           </>
